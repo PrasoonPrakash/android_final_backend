@@ -4,7 +4,7 @@
 
 You will need to run the Llama3 and Whisper service somewhere to support this app.
 Currently, we are running it at http://10.222.76.205:8000.
-In case you want to run it on your local system, download weights and use `llama3_service/llama3_hindi_whisper_service.py` to run this server.
+In case you want to run it on your local system, download weights and use `android/llama3_service/llama3_hindi_whisper_service.py` to run this server.
 *All required packages to be installed at your end. Check environment.yml for details.*
 
 LLAMA3_SERVICE environment variable must be set accordingly.
