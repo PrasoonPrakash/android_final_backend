@@ -102,7 +102,7 @@ def hindi():
         if EXCEPTION_TAG:
             message = "There was an error in processing. Please re-try uploading the audio."
         else:
-            message = "Audio processing underway. Please check after a couple of minutes."
+            message = "Audio file is under process. Please check after a couple of minutes."
         return jsonify({"transcript": message}), 200
     
     # with open(os.path.join(TRANSCRIPT_DIR, f"{SESSION_TAG}.txt"), 'r') as fp:
@@ -121,7 +121,7 @@ def english():
         if EXCEPTION_TAG:
             message = "There was an error in processing. Please re-try uploading the audio."
         else:
-            message = "Audio processing underway. Please check after a couple of minutes."
+            message = "Audio file is under process. Please check after a couple of minutes."
         return jsonify({"transcript": message}), 200
     
     # with open(os.path.join(TRANSLATION_DIR, f"{SESSION_TAG}.txt"), 'r') as fp:
@@ -139,7 +139,7 @@ def features():
         if EXCEPTION_TAG:
             message = "There was an error in processing. Please re-try uploading the audio."
         else:
-            message = "Audio processing underway. Please check after a couple of minutes."
+            message = "Audio file is under process. Please check after a couple of minutes."
         return jsonify({"transcript": message}), 200
 
     return jsonify({"name": SESSION_TAG}), 200
@@ -153,7 +153,7 @@ def data():
         if EXCEPTION_TAG:
             message = "There was an error in processing. Please re-try uploading the audio."
         else:
-            message = "Audio processing underway. Please check after a couple of minutes."
+            message = "Audio file is under process. Please check after a couple of minutes."
         return jsonify({"transcript": message}), 200
 
     csvPath = os.path.join(FEATURE_DIR, f"{SESSION_TAG}.csv")
@@ -170,7 +170,7 @@ def download_csv():
         if EXCEPTION_TAG:
             message = "There was an error in processing. Please re-try uploading the audio."
         else:
-            message = "Audio processing underway. Please check after a couple of minutes."
+            message = "Audio file is under process. Please check after a couple of minutes."
         return jsonify({"transcript": message}), 200
 
     try:
@@ -217,12 +217,18 @@ def uploadCsvAndPredict():
     file.save(filename)
     prediction, prob_0, prob_1 = process_and_predict(SESSION_TAG)
 
-    if prediction == 0:
-        s = f"You are classified in the NO risk category for Breast Cancer. \n \n There is a {prob_0}% possibility that you do not have Breast Cancer. \n \n Please continue regular follow-ups with your physician during your next visit."
+    if prediction == 1:
+        s = f"मूल्यांकन के आधार पर, स्तन कैंसर की संभावना {prob_1}% अनुमानित है। \n  संदेश - ध्यान दें! इस मरीज को आपके द्वारा दी गई जानकारी के आधार पर एक मैमोग्राफी कराने की सलाह दी जाती है। कृपया मरीज को NCI झज्जर में मैमोग्राम कराने के लिए सलाह दें।\n\nBased on the assessment, the estimated probability of breast cancer is {prob_1}%. \n Message- Attention ! This patient is advised to have a mammography, based on the history you have given us. Please counsel the patient to go to NCI Jhajjar for a mammogram."
     else:
-        s = f"Based on your assessment, there is a {prob_1}% estimated risk of Breast Cancer. \n \n To ensure your health and well-being, we will schedule an appointment for you at the earliest possible date."
+        s = f"मूल्यांकन के आधार पर, स्तन कैंसर नहीं होने की संभावना {prob_0}% अनुमानित है। \n संदेश -  इस मरीज को आपके द्वारा दी गई जानकारी के आधार पर स्तन कैंसर का कोई भी संभावित खतरा नहीं है। कृपया मरीज को अपनी नियमित फॉलो-अप जारी रखने की सलाह दें। \n \n Based on the assessment, the probability of not having breast cancer is estimated to be {prob_0}%. \n Message - There is no potential risk of breast cancer for this patient. Please councel the patient to continue with regular follow-ups as usual."
+
     
-    return jsonify({"prediction": s})
+    response = jsonify({"prediction": s})
+    print(response.json) 
+    
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    
+    return response
 
 
 def process_and_predict(tag):
